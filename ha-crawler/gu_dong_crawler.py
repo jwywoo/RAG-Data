@@ -12,38 +12,38 @@ from selenium.common.exceptions import WebDriverException
 
 from time import sleep
 
-from crawler_methods import description_get, rating_get, detail_link_get, address_get, reviews_get, info_get, switch_to_frame, place_dict_generator
+from crawler_methods import description_get, rating_get, detail_link_get, address_get, reviews_get, info_get, switch_to_frame, place_dict_generator, place_type_get
 
 url = "https://map.naver.com/"
 
 gu = '성북구'
 
 dong_list = [
-    # "성북동",
+    "성북동",
     "삼선동",
     "동선동",
     "돈암1동",
     "돈암2동",
     "안암동",
     "보문동",
-    # "정릉1동",
-    # "정릉2동",
-    # "정릉3동",
-    # "정릉4동",
-    # "길음1동",
-    # "길음2동",
-    # "종암동",
-    # "월곡1동",
-    # "월곡2동",
-    # "장위1동",
-    # "장위2동",
-    # "장위3동",
-    # "석관동"
+    "정릉1동",
+    "정릉2동",
+    "정릉3동",
+    "정릉4동",
+    "길음1동",
+    "길음2동",
+    "종암동",
+    "월곡1동",
+    "월곡2동",
+    "장위1동",
+    "장위2동",
+    "장위3동",
+    "석관동"
 ]
 
 categories = [
     '음식점',
-    '카페',
+    # '카페',
 ]
 
 # Json file
@@ -63,6 +63,7 @@ dup_check_current = []
 for row in data:
     dup_check.append(row['location'])
 
+print(len(dup_check))
 try:
     # Driver
     driver = webdriver.Chrome(service= Service(ChromeDriverManager().install()))
@@ -84,14 +85,14 @@ try:
             search = driver.find_element(By.CSS_SELECTOR, 'div.input_box > input.input_search')
             search.send_keys(search_input)
             search.send_keys(Keys.ENTER)
-            sleep(2)
+            sleep(10)
 
             # Results
             # Scroll down to bottom
             switch_to_frame(driver, frame_name='searchIframe')
             body = driver.find_element(By.CSS_SELECTOR, 'body')
             body.click()
-            for i in range(100):
+            for i in range(200):
                 body.send_keys(Keys.PAGE_DOWN)
             
 
@@ -124,7 +125,7 @@ try:
                     switch_to_frame(driver, "searchIframe")
                     place_link = place.find_element(By.CSS_SELECTOR, "div.CHC5F > a.tzwk0")
                     place_link.click()
-                    sleep(1)
+                    sleep(2)
 
                     # searchIframe to entryIframe
                     switch_to_frame(driver, "entryIframe")
@@ -134,23 +135,33 @@ try:
                         print(f"Out of {gu}!")
                         break
 
+                    # place type
+                    place_type = place_type_get(driver=driver)
+                    print(place_type)
+
                     # Rating
                     sleep(2)
                     rating = rating_get(driver=driver)
+                    
                     # Description
                     sleep(2)
                     description = description_get(driver=driver)
+                    
                     # Detail Link
                     sleep(2)
                     detail_link = detail_link_get(driver=driver)
+                    
                     # Reviews
                     reviews = reviews_get(driver)
+                    
                     # Info
                     info = info_get(driver)
                     updated_json.append(
                         place_dict_generator(
                             ad_gu=gu,
                             ad_dong=dong,
+                            address=address,
+                            place_type=place_type,
                             location=place_name,
                             description=description,
                             rating=rating,
@@ -160,18 +171,42 @@ try:
                         )
                     )
                     switch_to_frame(driver, "searchIframe")
-    for new_row in updated_json:
-        data.append(new_row)
-    with open(file_path, 'w', encoding='utf-8') as json_file:
-        json.dump(data, json_file, indent=4, ensure_ascii=False)
+        
+        # Dong Crawling Done
+        print(f"{dong} Crawling Done")
+        print(f"Saving {len(updated_json)} Data")
+        for new_row in updated_json:
+            data.append(new_row)
+        print(f"Current Data: {len(data)}")
+        with open(file_path, 'w', encoding='utf-8') as json_file:
+            json.dump(data, json_file, indent=4, ensure_ascii=False)
+
+        # New data, updated_json and dup_check   
+        print("List reset")
+        updated_json = []
+        dup_check = []
+        if os.path.exists(file_path):
+            with open(file_path, 'r', encoding='utf-8') as json_file:
+                data = json.load(json_file)
+        else:
+            data = []
+        for row in data:
+            dup_check.append(row['location'])
+        print(f"Updated Json List: {len(updated_json)}")
+        print(f"Duplication Check: {len(dup_check)}")
+
     print(f"{gu} Crawling: Done!")
     driver.quit()
-    # Saving Json
+
+# Saving crawled data if there is any bad news 
 except WebDriverException as e:
     print(e)
+    print("Updated: ", len(updated_json))
     for new_row in updated_json:
         data.append(new_row)
     with open(file_path, 'w', encoding='utf-8') as json_file:
         json.dump(data, json_file, indent=4, ensure_ascii=False)
+    sleep(10)
+    driver.quit()
 
 
