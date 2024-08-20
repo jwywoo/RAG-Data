@@ -123,10 +123,11 @@ def switch_to_frame(driver, frame_name):
     driver.switch_to.default_content()
     driver.switch_to.frame(frame_name)
 
-def place_dict_generator(ad_gu, ad_dong, location, description, rating, share_link, reviews, info):
+def place_dict_generator(ad_gu, ad_dong,address, location, description, rating, share_link, reviews, info):
     return {
         "ad_gu": ad_gu,
         "ad_dong": ad_dong,
+        "address": address,
         "location": location,
         "description": description,
         "rating": rating,
