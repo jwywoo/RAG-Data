@@ -12,7 +12,7 @@ from selenium.common.exceptions import WebDriverException
 
 from time import sleep
 
-from crawler_methods import description_get, rating_get, detail_link_get, address_get, reviews_get, info_get, switch_to_frame, place_dict_generator
+from crawler_methods import description_get, rating_get, detail_link_get, address_get, reviews_get, info_get, switch_to_frame, place_dict_generator, place_type_get
 
 url = "https://map.naver.com/"
 
@@ -134,6 +134,9 @@ try:
                         print(f"Out of {gu}!")
                         break
 
+                    # place type
+                    place_type = place_type_get(driver=driver)
+                    print(place_type)
                     # Rating
                     sleep(2)
                     rating = rating_get(driver=driver)
@@ -152,6 +155,7 @@ try:
                             ad_gu=gu,
                             ad_dong=dong,
                             address=address,
+                            place_type=place_type,
                             location=place_name,
                             description=description,
                             rating=rating,

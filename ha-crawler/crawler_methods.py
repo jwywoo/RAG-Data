@@ -21,6 +21,17 @@ def description_get(driver):
     
     return description
 
+def place_type_get(driver):
+    switch_to_frame(driver, "entryIframe")
+    try:
+        place_type = driver.find_element(
+                    By.CSS_SELECTOR,
+                    "div > span.lnJFt").text
+    except Exception as e:
+        print(e)
+        return "None"
+    return place_type
+
 def rating_get(driver):
     switch_to_frame(driver, "entryIframe")
     try:
@@ -87,7 +98,7 @@ def reviews_get(driver):
     tab = tab_selector(driver, "리뷰")
     try:
         tab.click()
-        sleep(2)
+        sleep(3)
         review_ul = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "div.place_section.k1QQ5 > div.place_section_content > ul"))
         )
@@ -108,7 +119,7 @@ def info_get(driver):
     tab = tab_selector(driver, "정보")
     try:
         tab.click()
-        sleep(2)
+        sleep(1)
         info = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((
                 By.CSS_SELECTOR, 
@@ -123,10 +134,11 @@ def switch_to_frame(driver, frame_name):
     driver.switch_to.default_content()
     driver.switch_to.frame(frame_name)
 
-def place_dict_generator(ad_gu, ad_dong,address, location, description, rating, share_link, reviews, info):
+def place_dict_generator(ad_gu, ad_dong, place_type, address, location, description, rating, share_link, reviews, info):
     return {
         "ad_gu": ad_gu,
         "ad_dong": ad_dong,
+        "place_type": place_type,
         "address": address,
         "location": location,
         "description": description,
