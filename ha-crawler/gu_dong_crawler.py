@@ -12,7 +12,7 @@ from selenium.common.exceptions import WebDriverException
 
 from time import sleep
 
-from crawler_methods import description_get, rating_get, detail_link_get, address_get, reviews_get, info_get, switch_to_frame, place_dict_generator, place_type_get
+from crawler_methods import description_get, rating_get, detail_link_get, address_get, reviews_get, info_get, switch_to_frame, place_dict_generator, place_type_get, place_name_get
 
 url = "https://map.naver.com/"
 
@@ -43,7 +43,8 @@ dong_list = [
 
 categories = [
     '음식점',
-    # '카페',
+    '카페',
+    '가볼만한곳'
 ]
 
 # Json file
@@ -115,7 +116,7 @@ try:
                 for place_index in range(len(places_li)):
                     place = places_li[place_index]
                     switch_to_frame(driver, "searchIframe")
-                    place_name = place.find_element(By.CSS_SELECTOR, "div.CHC5F > a.tzwk0 > div > div > span.place_bluelink.TYaxT").text
+                    place_name = place_name_get(driver, place)
                     if (place_name in dup_check or place_name in dup_check_current):
                         print("already crawled")
                         continue
@@ -202,11 +203,12 @@ try:
 except WebDriverException as e:
     print(e)
     print("Updated: ", len(updated_json))
-    for new_row in updated_json:
-        data.append(new_row)
-    with open(file_path, 'w', encoding='utf-8') as json_file:
-        json.dump(data, json_file, indent=4, ensure_ascii=False)
-    sleep(10)
+    if (len(updated_json) != 0):
+        for new_row in updated_json:
+            data.append(new_row)
+        with open(file_path, 'w', encoding='utf-8') as json_file:
+            json.dump(data, json_file, indent=4, ensure_ascii=False)
+        sleep(10)
     driver.quit()
 
 
