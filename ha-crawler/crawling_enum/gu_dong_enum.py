@@ -5,7 +5,7 @@ class GuDongEnum(Enum):
     seongbuk_gu_dong = {
         "gu":"성북구",
         "dong": [
-                # "성북동",
+                "성북동",
                 "삼선동",
                 "동선동",
                 "돈암1동",

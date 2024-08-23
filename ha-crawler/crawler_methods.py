@@ -140,7 +140,6 @@ def info_get(driver):
     tab = tab_selector(driver, "정보")
     try:
         tab.click()
-        sleep(1)
         info = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((
                 By.CSS_SELECTOR, 
