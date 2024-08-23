@@ -115,7 +115,7 @@ try:
                     address = address_get(driver=driver)
                     if (gu not in address.split(" ")):
                         print(f"Out of {gu}!")
-                        break
+                        continue
 
                     # place type
                     place_type = place_type_get(driver=driver)
