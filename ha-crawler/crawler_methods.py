@@ -19,6 +19,16 @@ def place_name_get(driver, place):
         place_name = place.find_element(By.CSS_SELECTOR, "div > span.xBZDS").text
         return place_name
 
+def place_link_get(driver, place):
+   switch_to_frame(driver,"searchIframe")
+   try:
+       place_link = place.find_element(By.CSS_SELECTOR, "div.CHC5F > a.tzwk0")
+       return place_link
+   except Exception as e:
+       print(e)
+       place_link = place.find_element(By.CSS_SELECTOR, "div.YgcU0 > a.Ee8MN")
+       return place_link
+
 
 def description_get(driver):
     switch_to_frame(driver, "entryIframe")

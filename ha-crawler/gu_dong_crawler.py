@@ -12,38 +12,19 @@ from selenium.common.exceptions import WebDriverException
 
 from time import sleep
 
-from crawler_methods import description_get, rating_get, detail_link_get, address_get, reviews_get, info_get, switch_to_frame, place_dict_generator, place_type_get, place_name_get
+from crawling_enum.gu_dong_enum import GuDongEnum
+
+from crawler_methods import description_get, rating_get, detail_link_get, address_get, reviews_get, info_get, switch_to_frame, place_dict_generator, place_type_get, place_name_get, place_link_get
 
 url = "https://map.naver.com/"
 
-gu = '성북구'
-
-dong_list = [
-    "성북동",
-    "삼선동",
-    "동선동",
-    "돈암1동",
-    "돈암2동",
-    "안암동",
-    "보문동",
-    "정릉1동",
-    "정릉2동",
-    "정릉3동",
-    "정릉4동",
-    "길음1동",
-    "길음2동",
-    "종암동",
-    "월곡1동",
-    "월곡2동",
-    "장위1동",
-    "장위2동",
-    "장위3동",
-    "석관동"
-]
+gu_dong = GuDongEnum.seongbuk_gu_dong
+gu = gu_dong.value['gu']
+dong_list = gu_dong.value['dong']
 
 categories = [
-    '음식점',
-    '카페',
+    # '음식점',
+    # '카페',
     '가볼만한곳'
 ]
 
@@ -124,7 +105,7 @@ try:
                     dup_check_current.append(place_name)
                     # Getting Place Data
                     switch_to_frame(driver, "searchIframe")
-                    place_link = place.find_element(By.CSS_SELECTOR, "div.CHC5F > a.tzwk0")
+                    place_link = place_link_get(driver=driver, place=place)
                     place_link.click()
                     sleep(2)
 
