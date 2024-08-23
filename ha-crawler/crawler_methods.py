@@ -9,6 +9,17 @@ from selenium.webdriver.common.keys import Keys
 from time import sleep
 
 
+def place_name_get(driver, place):
+    switch_to_frame(driver,"searchIframe")
+    try:
+        place_name  = place.find_element(By.CSS_SELECTOR, "div.CHC5F > a.tzwk0 > div > div > span.place_bluelink.TYaxT").text
+        return place_name
+    except Exception as e:
+        print(e)
+        place_name = place.find_element(By.CSS_SELECTOR, "div > span.xBZDS").text
+        return place_name
+
+
 def description_get(driver):
     switch_to_frame(driver, "entryIframe")
     try:
