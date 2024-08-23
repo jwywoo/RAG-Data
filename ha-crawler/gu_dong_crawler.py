@@ -23,10 +23,10 @@ gu = gu_dong.value['gu']
 dong_list = gu_dong.value['dong']
 
 categories = [
-    # '음식점',
-    # '카페',
-    '가볼만한곳'
-]
+        '음식점',
+        '카페',
+        '가볼만한곳'
+    ]
 
 # Json file
 JSON_DIR_PATH = 'json/gu_dong_json/'
@@ -47,17 +47,17 @@ for row in data:
 
 print(len(dup_check))
 try:
-    # Driver
-    driver = webdriver.Chrome(service= Service(ChromeDriverManager().install()))
-    # Supporting vars
-    current_percentage = 0
-    pages_to_search = ["1", "2", "3"]
     print("")
     print(f"{gu} Crawling: Started")
     print("")
     updated_json = []
     for dong_index in range(len(dong_list)):
         for category_index in range(len(categories)):
+            # Driver
+            driver = webdriver.Chrome(service= Service(ChromeDriverManager().install()))
+            # Supporting vars
+            current_percentage = 0
+            pages_to_search = ["1", "2", "3"]
             # Searching for results of category in gu-dong
             dong = dong_list[dong_index] 
             category = categories[category_index]
@@ -100,6 +100,8 @@ try:
                     place_name = place_name_get(driver, place)
                     if (place_name in dup_check or place_name in dup_check_current):
                         print("already crawled")
+                        sleep(0.5)
+                        switch_to_frame(driver, "searchIframe")
                         continue
                     print(place_name)
                     dup_check_current.append(place_name)
@@ -107,7 +109,7 @@ try:
                     switch_to_frame(driver, "searchIframe")
                     place_link = place_link_get(driver=driver, place=place)
                     place_link.click()
-                    sleep(2)
+                    sleep(3)
 
                     # searchIframe to entryIframe
                     switch_to_frame(driver, "entryIframe")
@@ -115,6 +117,8 @@ try:
                     address = address_get(driver=driver)
                     if (gu not in address.split(" ")):
                         print(f"Out of {gu}!")
+                        sleep(0.5)
+                        switch_to_frame(driver, "searchIframe")
                         continue
 
                     # place type
@@ -154,31 +158,31 @@ try:
                     )
                     switch_to_frame(driver, "searchIframe")
         
-        # Dong Crawling Done
-        print(f"{dong} Crawling Done")
-        print(f"Saving {len(updated_json)} Data")
-        for new_row in updated_json:
-            data.append(new_row)
-        print(f"Current Data: {len(data)}")
-        with open(file_path, 'w', encoding='utf-8') as json_file:
-            json.dump(data, json_file, indent=4, ensure_ascii=False)
+            # Dong Crawling Done
+            print(f"{dong} {category} Crawling Done")
+            print(f"Saving {len(updated_json)} Data")
+            for new_row in updated_json:
+                data.append(new_row)
+            print(f"Current Data: {len(data)}")
+            with open(file_path, 'w', encoding='utf-8') as json_file:
+                json.dump(data, json_file, indent=4, ensure_ascii=False)
 
-        # New data, updated_json and dup_check   
-        print("List reset")
-        updated_json = []
-        dup_check = []
-        if os.path.exists(file_path):
-            with open(file_path, 'r', encoding='utf-8') as json_file:
-                data = json.load(json_file)
-        else:
-            data = []
-        for row in data:
-            dup_check.append(row['location'])
-        print(f"Updated Json List: {len(updated_json)}")
-        print(f"Duplication Check: {len(dup_check)}")
+            # New data, updated_json and dup_check   
+            print("List reset")
+            updated_json = []
+            dup_check = []
+            if os.path.exists(file_path):
+                with open(file_path, 'r', encoding='utf-8') as json_file:
+                    data = json.load(json_file)
+            else:
+                data = []
+            for row in data:
+                dup_check.append(row['location'])
+            print(f"Updated Json List: {len(updated_json)}")
+            print(f"Duplication Check: {len(dup_check)}")
+            driver.quit()
 
     print(f"{gu} Crawling: Done!")
-    driver.quit()
 
 # Saving crawled data if there is any bad news 
 except WebDriverException as e:
